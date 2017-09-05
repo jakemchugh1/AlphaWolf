@@ -1,9 +1,13 @@
 package entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import models.TexturedModel;
 
-import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+
+import terrain.Terrain;
 
 public class Entity {
 	
@@ -12,8 +16,14 @@ public class Entity {
 	private float rotX, rotY, rotZ;
 	private float scale;
 	
+	public static boolean[][][] collisionsQuad = new boolean[600][120][600];
+	//public static boolean[][][] collisionsQuad2 = new boolean[600][100][600];
+	//public static boolean[][][] collisionsQuad3 = new boolean[600][100][600];
+	//public static boolean[][][] collisionsQuad4 = new boolean[600][100][600];
 	
 	private int textureIndex = 0;
+	
+	//private List<CollisionBox> collisions= new ArrayList<CollisionBox>();
 	
 	public Entity(TexturedModel model, Vector3f position, float rotX,
 			float rotY, float rotZ, float scale) {
@@ -24,6 +34,7 @@ public class Entity {
 		this.rotY = rotY;
 		this.rotZ = rotZ;
 		this.scale = scale;
+		
 	}
 	public Entity(TexturedModel model,int index, Vector3f position, float rotX,
 			float rotY, float rotZ, float scale) {
@@ -36,6 +47,7 @@ public class Entity {
 		this.rotZ = rotZ;
 		this.scale = scale;
 	}
+	
 	public float getTextureXOffset(){
 		int column = textureIndex % model.getTexture().getNumberOfRows();
 		return (float)column/(float)model.getTexture().getNumberOfRows();
@@ -91,6 +103,23 @@ public class Entity {
 	}
 	public void setScale(float scale) {
 		this.scale = scale;
+	}
+	
+	
+	public void setCollisions(int length, int height, int width){
+		
+		for(int i = (int) (position.x-(length)); i <= (int)(position.x+(length)); i++){
+			for(int j = (int) (position.y)+20; j <= (int)(position.y+(height)+20);j++){
+				for (int k = (int) (position.z-(width)); k <=(int)(position.z+(width)); k++){
+					collisionsQuad[i][j][k] = true;
+					//collisionsQuad2[i][j][k] = true;
+					//collisionsQuad3[i][j][k] = true;
+					//collisionsQuad4[i][j][k] = true;
+				}
+			}
+			
+		}
+		
 	}
 	
 	

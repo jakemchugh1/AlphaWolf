@@ -107,13 +107,16 @@ public class MainGameLoop {
 		dTexture.setShineDamper(5);
 		dTexture.setReflectivity(1);
 		
-		Terrain terrain = new Terrain(0,-1,loader,texturePack, blendMap, "heightMap2");
+		Terrain terrain = new Terrain(0,0,loader,texturePack, blendMap, "heightMap2");
 		
 		//Entity tree = new Entity(treeTex, new Vector3f(0,0,-50),0,0,0,1);
-		Entity dragon = new Entity(dragonTex, new Vector3f(200,terrain.getHeightOfTerrain(200,-200),-200),0,0,0,1);
-		Entity bunny = new Entity(bunnyTex, new Vector3f(250,terrain.getHeightOfTerrain(250,-240),-240),0,0,0,1);
-		Entity wolf = new Entity(wolfTex, new Vector3f(175,terrain.getHeightOfTerrain(175,-220),-220),0,0,0,0.05f);
-		Entity box = new Entity(boxTex, new Vector3f(225,terrain.getHeightOfTerrain(225,-175),-175),0,0,0,5);
+		Entity dragon = new Entity(dragonTex, new Vector3f(200,terrain.getHeightOfTerrain(200,200),200),0,0,0,1);
+		Entity bunny = new Entity(bunnyTex, new Vector3f(250,terrain.getHeightOfTerrain(250,200),200),0,0,0,1);
+		Entity wolf = new Entity(wolfTex, new Vector3f(175,terrain.getHeightOfTerrain(175,220),220),0,0,0,0.05f);
+		Entity box = new Entity(boxTex, new Vector3f(225,terrain.getHeightOfTerrain(225,175),175),0,0,0,5);
+		
+		box.setCollisions(10, 1, 10);
+		dragon.setCollisions(20, 20, 5);
 		
 		
 		Light sun = new Light(new Vector3f(3000,2000,3000), new Vector3f(1,1,1));
@@ -125,40 +128,40 @@ public class MainGameLoop {
 		List<Entity> allTrees2 = new ArrayList<Entity>();
 		Random random = new Random();
 		
-		for(int i = 0; i < 1200; i++){
-			float x = random.nextFloat()*terrain.SIZE;
-			float z = -(random.nextFloat()*terrain.SIZE);
+		for(int i = 0; i < 10; i++){
+			float x = random.nextFloat()*(terrain.SIZE-30)+30;
+			float z = (random.nextFloat()*(terrain.SIZE-30)+30);
 			float y = terrain.getHeightOfTerrain(x,z);
 			allTrees.add(new Entity(treeTex, new Vector3f(x,y,z), random.nextInt(10), random.nextInt(180),0f,random.nextInt(5)+1));
 		}
 		for(int i = 0; i < 0; i++){
 			float x = random.nextFloat()*terrain.SIZE;
-			float z = -(random.nextFloat()*terrain.SIZE);
+			float z = (random.nextFloat()*terrain.SIZE);
 			float y = terrain.getHeightOfTerrain(x,z);
 			allTrees2.add(new Entity(lowPolyTreeTex, random.nextInt(4), new Vector3f(x,y,z), 0f,0f,0f,1));
 		}
-		for(int i = 0; i < 1800; i++){
+		for(int i = 0; i < 0; i++){
 			float x = random.nextFloat()*terrain.SIZE;
-			float z = -(random.nextFloat()*terrain.SIZE);
+			float z = (random.nextFloat()*terrain.SIZE);
 			float y = (terrain.getHeightOfTerrain(x,z));
 			allGrass.add(new Entity(grassTex, new Vector3f(x,y,z), 0f,0f,0f,1f));
 		}
-		for(int i = 0; i < 1200; i++){
+		for(int i = 0; i < 0; i++){
 			float x = random.nextFloat()*terrain.SIZE;
-			float z = -(random.nextFloat()*terrain.SIZE);
+			float z = (random.nextFloat()*terrain.SIZE);
 			float y = terrain.getHeightOfTerrain(x,z);
 			allFlowers.add(new Entity(flowerTex, new Vector3f(x,y,z), 0f,0f,0f,1f));
 		}
 		for(int i = 0; i < 0; i++){
 			float x = random.nextFloat()*terrain.SIZE;
-			float z = -(random.nextFloat()*terrain.SIZE);
+			float z = (random.nextFloat()*terrain.SIZE);
 			float y = terrain.getHeightOfTerrain(x,z);
 			allFerns.add(new Entity(fernTex, random.nextInt(4), new Vector3f(x,y,z), 0f,0f,0f,1f));
 		}
 		
 		MasterRenderer renderer = new MasterRenderer();
-		
-		Player player = new Player(wolfTex, new Vector3f(250,-1,-250),0,90,0,0.05f);
+
+		Player player = new Player(wolfTex, new Vector3f(250,0,250),0,90,0,0.05f);
 		Camera camera = new Camera(player);
 		
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -173,6 +176,7 @@ public class MainGameLoop {
 			renderer.processEntity(player);
 			for(Entity tree : allTrees){
 				renderer.processEntity(tree);
+				tree.setCollisions(5, 30, 5);
 			}
 			for(Entity tree2 : allTrees2){
 				renderer.processEntity(tree2);
