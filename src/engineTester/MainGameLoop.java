@@ -117,7 +117,8 @@ public class MainGameLoop {
 		
 		box.setCollisions(10, 1, 10);
 		dragon.setCollisions(20, 20, 5);
-		
+		bunny.setCollisions(10, 20, 10);
+		wolf.setCollisions(5, 20, 20);
 		
 		Light sun = new Light(new Vector3f(3000,2000,3000), new Vector3f(1,1,1));
 		
@@ -128,9 +129,9 @@ public class MainGameLoop {
 		List<Entity> allTrees2 = new ArrayList<Entity>();
 		Random random = new Random();
 		
-		for(int i = 0; i < 10; i++){
-			float x = random.nextFloat()*(terrain.SIZE-30)+30;
-			float z = (random.nextFloat()*(terrain.SIZE-30)+30);
+		for(int i = 0; i < 100; i++){
+			float x = random.nextFloat()*(terrain.SIZE-100)+100;
+			float z = (random.nextFloat()*(terrain.SIZE-100)+100);
 			float y = terrain.getHeightOfTerrain(x,z);
 			allTrees.add(new Entity(treeTex, new Vector3f(x,y,z), random.nextInt(10), random.nextInt(180),0f,random.nextInt(5)+1));
 		}

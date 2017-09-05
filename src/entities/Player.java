@@ -16,7 +16,7 @@ public class Player extends Entity{
 	private static final float JUMP_POWER = 30;
 	
 	private static final float TERRAIN_HEIGHT = 0;
-	private static final float DISTANCE_FROM_BORDER = 10;
+	private static final float DISTANCE_FROM_BORDER = 20;
 	
 	
 	private float currentSpeed = 0;
@@ -40,14 +40,18 @@ public class Player extends Entity{
 		float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
 		dx = (float) (distance * Math.sin(Math.toRadians(super.getRotY())));
 		dz = (float) (distance * Math.cos(Math.toRadians(super.getRotY())));
-		if(collisionDetection()) {
+		/*if(collisionDetection()) {
 			System.out.println("colliding!");
 			super.increasePosition(-dx*1.02f, 0f, -dz*1.02f);
 		}else super.increasePosition(dx, 0f, dz);
-		if(collisionDetection()) System.out.println("Colliding!");
+		if(collisionDetection()) System.out.println("Colliding!");*/
+		
+		super.increasePosition(dx, 0f, dz);
+		collisionDetection();
 		
 		upwardsSpeed += GRAVITY *DisplayManager.getFrameTimeSeconds();
 		super.increasePosition(0, upwardsSpeed * DisplayManager.getFrameTimeSeconds(), 0);
+		//if (super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+19][(int) super.getPosition().z] == true){
 		terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
 		if(super.getPosition().y < terrainHeight){
 			upwardsSpeed = 0;
@@ -83,34 +87,53 @@ public class Player extends Entity{
 			jump();	
 		}
 	}
-	private boolean collisionDetection(){
+	private void collisionDetection(){
+		//Borders of objects collision detection
+		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z+1] == true) {
+			super.increasePosition(-dx, 0f, 0f);
+			colliding = true;
+			System.out.println("Colliding! Object X Negative");
+		}
+		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z-1] == true) {
+			super.increasePosition(0f, 0f, -dz);
+			colliding = true;
+			System.out.println("Colliding! Object Z Negative");
+		}
+		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z-1] == true) {
+			super.increasePosition(-dx, 0f, 0f);
+			colliding = true;
+			System.out.println("Colliding! Object X Positive");
+		}
+		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z+1] == true) {
+			super.increasePosition(0f, 0f, -dz);
+			colliding = true;
+			System.out.println("Colliding! Object Z Positive");
+		}	
 		
-		
-		colliding = super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z];
+		//super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z];
 		
 		
 		//Borders of terrain collision detection
 		if(super.getPosition().x<+DISTANCE_FROM_BORDER) {
-			super.increasePosition(-dx*0.99999f, 0f, 0f);
+			super.increasePosition(-dx, 0f, 0f);
 			colliding = true;
 			System.out.println("Colliding! X Negative");
 		}
 		if(super.getPosition().z<DISTANCE_FROM_BORDER) {
-			super.increasePosition(0f, 0f, -dz*0.99999f);
+			super.increasePosition(0f, 0f, -dz);
 			colliding = true;
 			System.out.println("Colliding! Z Negative");
 		}
-		if(super.getPosition().x>+600-DISTANCE_FROM_BORDER) {
-			super.increasePosition(-dx*0.99999f, 0f, 0f);
+		if(super.getPosition().x>3200-DISTANCE_FROM_BORDER) {
+			super.increasePosition(-dx, 0f, 0f);
 			colliding = true;
 			System.out.println("Colliding! X Positive");
 		}
-		if(super.getPosition().z>600-DISTANCE_FROM_BORDER) {
-			super.increasePosition(0f, 0f, -dz*0.99999f);
+		if(super.getPosition().z>3200-DISTANCE_FROM_BORDER) {
+			super.increasePosition(0f, 0f, -dz);
 			colliding = true;
 			System.out.println("Colliding! Z Positive");
 		}
-		return colliding;
 	}
 
 }
