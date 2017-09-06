@@ -16,10 +16,10 @@ public class Entity {
 	private float rotX, rotY, rotZ;
 	private float scale;
 	
-	public static boolean[][][] collisionsQuad = new boolean[3200][120][3200];
-	//public static boolean[][][] collisionsQuad2 = new boolean[600][100][600];
-	//public static boolean[][][] collisionsQuad3 = new boolean[600][100][600];
-	//public static boolean[][][] collisionsQuad4 = new boolean[600][100][600];
+	public static boolean[][][] collisionsQuad = new boolean[3400][200][3400];
+	//public static boolean[][][] collisionsQuad2 = new boolean[1600][100][1600];
+	//public static boolean[][][] collisionsQuad3 = new boolean[1600][100][1600];
+	//public static boolean[][][] collisionsQuad4 = new boolean[1600][100][1600];
 	
 	private int textureIndex = 0;
 	

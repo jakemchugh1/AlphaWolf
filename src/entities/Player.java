@@ -12,6 +12,7 @@ public class Player extends Entity{
 	
 	private static final float RUN_SPEED = 100;
 	private static final float TURN_SPEED = 160;
+	
 	private static final float GRAVITY = -50;
 	private static final float JUMP_POWER = 30;
 	
@@ -50,8 +51,9 @@ public class Player extends Entity{
 		collisionDetection();
 		
 		upwardsSpeed += GRAVITY *DisplayManager.getFrameTimeSeconds();
-		super.increasePosition(0, upwardsSpeed * DisplayManager.getFrameTimeSeconds(), 0);
-		//if (super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+19][(int) super.getPosition().z] == true){
+		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+19][(int) super.getPosition().z]==false){
+			super.increasePosition(0, upwardsSpeed * DisplayManager.getFrameTimeSeconds(), 0);
+		}
 		terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
 		if(super.getPosition().y < terrainHeight){
 			upwardsSpeed = 0;
@@ -63,7 +65,7 @@ public class Player extends Entity{
 	private void jump(){
 		if(!isInAir){
 			this.upwardsSpeed = JUMP_POWER;
-			isInAir = true;
+			// isInAir = true;
 		}
 	}
 	
@@ -89,22 +91,22 @@ public class Player extends Entity{
 	}
 	private void collisionDetection(){
 		//Borders of objects collision detection
-		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z+1] == true) {
+		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z+1]) {
 			super.increasePosition(-dx, 0f, 0f);
 			colliding = true;
 			System.out.println("Colliding! Object X Negative");
 		}
-		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z-1] == true) {
+		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z-1]) {
 			super.increasePosition(0f, 0f, -dz);
 			colliding = true;
 			System.out.println("Colliding! Object Z Negative");
 		}
-		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z-1] == true) {
+		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z-1]) {
 			super.increasePosition(-dx, 0f, 0f);
 			colliding = true;
 			System.out.println("Colliding! Object X Positive");
 		}
-		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z+1] == true) {
+		if(super.collisionsQuad[(int) super.getPosition().x][(int) super.getPosition().y+20][(int) super.getPosition().z+1]) {
 			super.increasePosition(0f, 0f, -dz);
 			colliding = true;
 			System.out.println("Colliding! Object Z Positive");

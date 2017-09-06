@@ -114,13 +114,19 @@ public class MainGameLoop {
 		Entity bunny = new Entity(bunnyTex, new Vector3f(250,terrain.getHeightOfTerrain(250,200),200),0,0,0,1);
 		Entity wolf = new Entity(wolfTex, new Vector3f(175,terrain.getHeightOfTerrain(175,220),220),0,0,0,0.05f);
 		Entity box = new Entity(boxTex, new Vector3f(225,terrain.getHeightOfTerrain(225,175),175),0,0,0,5);
+		Entity box2 = new Entity(boxTex, new Vector3f(235,terrain.getHeightOfTerrain(225,175),175),0,0,0,5);
 		
-		box.setCollisions(10, 1, 10);
-		dragon.setCollisions(20, 20, 5);
+		box.setCollisions(10, 3, 10);
+		box2.setCollisions(10, 3, 10);
+		dragon.setCollisions(10, 10, 5);
 		bunny.setCollisions(10, 20, 10);
 		wolf.setCollisions(5, 20, 20);
 		
-		Light sun = new Light(new Vector3f(3000,2000,3000), new Vector3f(1,1,1));
+		List<Light> lights = new ArrayList<Light>();
+		lights.add(new Light(new Vector3f(3000,2000,3000), new Vector3f(0.8f,0.8f,0.8f)));
+		//lights.add(new Light(new Vector3f(400,10,400), new Vector3f(0,0,1), new Vector3f(1,0.01f,0.002f)));
+		//lights.add(new Light(new Vector3f(200,terrain.getHeightOfTerrain(200,200)+4,200), new Vector3f(10,0,0), new Vector3f(1,10,10)));
+		
 		
 		List<Entity> allTrees = new ArrayList<Entity>();
 		List<Entity> allGrass = new ArrayList<Entity>();
@@ -195,9 +201,10 @@ public class MainGameLoop {
 			renderer.processEntity(dragon);
 			renderer.processEntity(wolf);
 			renderer.processEntity(box);
+			renderer.processEntity(box2);
 			
 			renderer.processTerrain(terrain);
-			renderer.render(sun, camera);
+			renderer.render(lights, camera);
 			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();
 		}
