@@ -1,8 +1,12 @@
 package engineTester;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import models.RawModel;
 import models.TexturedModel;
@@ -20,6 +24,9 @@ import terrain.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import collisions.Collision;
+import collisions.CollisionBall;
+import collisions.CollisionBox;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
@@ -34,6 +41,7 @@ public class MainGameLoop {
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
 		//OpenGL expects vertices to be defined counter clockwise by default
+		
 		
 		ModelData data = OBJFileLoader.loadOBJ("pine");
 		ModelData data1 = OBJFileLoader.loadOBJ("dragon");
@@ -61,7 +69,7 @@ public class MainGameLoop {
 		RawModel boxModel = loader.loadToVAO(data7.getVertices(), data7.getTextureCoords(),
 				data7.getNormals(), data7.getIndices());
 		
-		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
+		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("frost_fern"));
 		fernTextureAtlas.setNumberOfRows(2);
 		ModelTexture polyTreeTextureAtlas = new ModelTexture(loader.loadTexture("lowPolyTree"));
 		polyTreeTextureAtlas.setNumberOfRows(2);
@@ -104,72 +112,83 @@ public class MainGameLoop {
 		ModelTexture dTexture = dragonTex.getTexture();
 		//ModelTexture bTexture = bunnyTex.getTexture();
 		
-		dTexture.setShineDamper(5);
+		dTexture.setShineDamper(1);
 		dTexture.setReflectivity(1);
 		
 		Terrain terrain = new Terrain(0,0,loader,texturePack, blendMap, "heightMap2");
+		//Collision boxes
+		CollisionBox nullCollision = new CollisionBox(0, new Vector3f(0,0,0));
 		
 		//Entity tree = new Entity(treeTex, new Vector3f(0,0,-50),0,0,0,1);
-		Entity dragon = new Entity(dragonTex, new Vector3f(200,terrain.getHeightOfTerrain(200,200),200),0,0,0,1);
-		Entity bunny = new Entity(bunnyTex, new Vector3f(250,terrain.getHeightOfTerrain(250,200),200),0,0,0,1);
-		Entity wolf = new Entity(wolfTex, new Vector3f(175,terrain.getHeightOfTerrain(175,220),220),0,0,0,0.05f);
-		Entity box = new Entity(boxTex, new Vector3f(225,terrain.getHeightOfTerrain(225,175),175),0,0,0,5);
-		Entity box2 = new Entity(boxTex, new Vector3f(235,terrain.getHeightOfTerrain(225,175),175),0,0,0,5);
+		Entity dragon = new Entity(dragonTex, new Vector3f(200,terrain.getHeightOfTerrain(200,200),200),0,0,0,1, false, nullCollision);
+		Entity bunny = new Entity(bunnyTex, new Vector3f(250,terrain.getHeightOfTerrain(250,200),200),0,0,0,1, false, nullCollision);
+		Entity wolf = new Entity(wolfTex, new Vector3f(175,terrain.getHeightOfTerrain(175,220),220),0,0,0,0.05f, false, nullCollision);
+		Entity box = new Entity(boxTex, new Vector3f(225,terrain.getHeightOfTerrain(225,175),175),0,0,0,5, true, new CollisionBox(10, 10, 5, 5, 10, 10, new Vector3f(225,terrain.getHeightOfTerrain(225,175),175)));
+		Entity box2 = new Entity(boxTex, new Vector3f(255,terrain.getHeightOfTerrain(225,175),175),0,0,0,5, true, new CollisionBox(10, 10, 5, 5, 10, 10, new Vector3f(255,terrain.getHeightOfTerrain(225,175),175)));
+		Entity box3 = new Entity(boxTex, new Vector3f(325,terrain.getHeightOfTerrain(325,275),275),0,0,0,5, true, new CollisionBox(10, 10, 5, 5, 10, 10, new Vector3f(325,terrain.getHeightOfTerrain(325,275), 275)));
 		
-		box.setCollisions(10, 3, 10);
-		box2.setCollisions(10, 3, 10);
-		dragon.setCollisions(10, 10, 5);
-		bunny.setCollisions(10, 20, 10);
-		wolf.setCollisions(5, 20, 20);
+		
+		
 		
 		List<Light> lights = new ArrayList<Light>();
 		lights.add(new Light(new Vector3f(3000,2000,3000), new Vector3f(0.8f,0.8f,0.8f)));
 		//lights.add(new Light(new Vector3f(400,10,400), new Vector3f(0,0,1), new Vector3f(1,0.01f,0.002f)));
-		//lights.add(new Light(new Vector3f(200,terrain.getHeightOfTerrain(200,200)+4,200), new Vector3f(10,0,0), new Vector3f(1,10,10)));
+		lights.add(new Light(new Vector3f(325,terrain.getHeightOfTerrain(325,275)+5,275), new Vector3f(2,1,0), new Vector3f(1,0.01f,0.0005f)));
 		
 		
-		List<Entity> allTrees = new ArrayList<Entity>();
-		List<Entity> allGrass = new ArrayList<Entity>();
-		List<Entity> allFerns = new ArrayList<Entity>();
+		Set<Entity> allTrees = new HashSet<Entity>();
+		Set<Entity> allGrass = new HashSet<Entity>();
+		Set<Entity> allFerns = new HashSet<Entity>();
 		List<Entity> allFlowers = new ArrayList<Entity>();
 		List<Entity> allTrees2 = new ArrayList<Entity>();
 		Random random = new Random();
 		
-		for(int i = 0; i < 100; i++){
+		for(int i = 0; i < 10000; i++){
 			float x = random.nextFloat()*(terrain.SIZE-100)+100;
 			float z = (random.nextFloat()*(terrain.SIZE-100)+100);
 			float y = terrain.getHeightOfTerrain(x,z);
-			allTrees.add(new Entity(treeTex, new Vector3f(x,y,z), random.nextInt(10), random.nextInt(180),0f,random.nextInt(5)+1));
+			allTrees.add(new Entity(treeTex, new Vector3f(x,y,z), random.nextInt(10), random.nextInt(180),0f,random.nextInt(5)+1, true, new CollisionBox(5, 5, 20, 20, 5, 5, new Vector3f(x,y,z))));
 		}
 		for(int i = 0; i < 0; i++){
 			float x = random.nextFloat()*terrain.SIZE;
 			float z = (random.nextFloat()*terrain.SIZE);
 			float y = terrain.getHeightOfTerrain(x,z);
-			allTrees2.add(new Entity(lowPolyTreeTex, random.nextInt(4), new Vector3f(x,y,z), 0f,0f,0f,1));
+			allTrees2.add(new Entity(lowPolyTreeTex, random.nextInt(4), new Vector3f(x,y,z), 0f,0f,0f,1, false, nullCollision));
 		}
-		for(int i = 0; i < 0; i++){
+		for(int i = 0; i < 10000; i++){
 			float x = random.nextFloat()*terrain.SIZE;
 			float z = (random.nextFloat()*terrain.SIZE);
 			float y = (terrain.getHeightOfTerrain(x,z));
-			allGrass.add(new Entity(grassTex, new Vector3f(x,y,z), 0f,0f,0f,1f));
+			allGrass.add(new Entity(grassTex, new Vector3f(x,y,z), 0f,0f,0f,1f, false, nullCollision));
 		}
 		for(int i = 0; i < 0; i++){
 			float x = random.nextFloat()*terrain.SIZE;
 			float z = (random.nextFloat()*terrain.SIZE);
 			float y = terrain.getHeightOfTerrain(x,z);
-			allFlowers.add(new Entity(flowerTex, new Vector3f(x,y,z), 0f,0f,0f,1f));
+			allFlowers.add(new Entity(flowerTex, new Vector3f(x,y,z), 0f,0f,0f,1f, false, nullCollision));
 		}
-		for(int i = 0; i < 0; i++){
+		for(int i = 0; i < 1000; i++){
 			float x = random.nextFloat()*terrain.SIZE;
 			float z = (random.nextFloat()*terrain.SIZE);
 			float y = terrain.getHeightOfTerrain(x,z);
-			allFerns.add(new Entity(fernTex, random.nextInt(4), new Vector3f(x,y,z), 0f,0f,0f,1f));
+			allFerns.add(new Entity(fernTex, random.nextInt(4), new Vector3f(x,y,z), 0f,0f,0f,1f, false, nullCollision));
 		}
 		
-		MasterRenderer renderer = new MasterRenderer();
+		MasterRenderer renderer = new MasterRenderer(loader);
 
-		Player player = new Player(wolfTex, new Vector3f(250,0,250),0,90,0,0.05f);
+		Player player = new Player(wolfTex, new Vector3f(250,0,250),0,90,0,0.05f, true, new CollisionBall(1, new Vector3f(250,0,250)));
 		Camera camera = new Camera(player);
+		
+		///// setting collisions////////
+		Map<Entity, Collision> staticCollisions = new HashMap<Entity, Collision>();
+		staticCollisions.put(box, box.getCollisions());
+		staticCollisions.put(box2, box2.getCollisions());
+		staticCollisions.put(box3, box3.getCollisions());
+		for(Entity tree : allTrees){
+			staticCollisions.put(tree, tree.getCollisions());
+		}
+		//this key set is necessary to call upon the entity of the map
+		Set<Entity> keySet = staticCollisions.keySet();
 		
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
 		GuiTexture gui = new GuiTexture(loader.loadTexture("alpha"), new Vector2f(0.75f, 0.75f), new Vector2f(0.25f, 0.25f));
@@ -183,7 +202,6 @@ public class MainGameLoop {
 			renderer.processEntity(player);
 			for(Entity tree : allTrees){
 				renderer.processEntity(tree);
-				tree.setCollisions(5, 30, 5);
 			}
 			for(Entity tree2 : allTrees2){
 				renderer.processEntity(tree2);
@@ -197,16 +215,27 @@ public class MainGameLoop {
 			for(Entity flower : allFlowers){
 				renderer.processEntity(flower);
 			}
+			for(Entity collidableObject : keySet){
+				player.checkCollisions(staticCollisions.get(collidableObject));
+				if(collidableObject == null) {
+					System.out.println("ERROR: Collision is null!");
+					throw new IllegalStateException();
+				}
+				
+			}
+			
 			renderer.processEntity(bunny);
 			renderer.processEntity(dragon);
 			renderer.processEntity(wolf);
 			renderer.processEntity(box);
 			renderer.processEntity(box2);
+			renderer.processEntity(box3);
 			
 			renderer.processTerrain(terrain);
 			renderer.render(lights, camera);
 			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();
+			
 		}
 		
 		guiRenderer.cleanUp();

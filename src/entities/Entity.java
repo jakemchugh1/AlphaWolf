@@ -1,13 +1,14 @@
 package entities;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import models.TexturedModel;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import terrain.Terrain;
+import collisions.Collision;
+import collisions.CollisionBox;
 
 public class Entity {
 	
@@ -16,17 +17,17 @@ public class Entity {
 	private float rotX, rotY, rotZ;
 	private float scale;
 	
-	public static boolean[][][] collisionsQuad = new boolean[3400][200][3400];
-	//public static boolean[][][] collisionsQuad2 = new boolean[1600][100][1600];
-	//public static boolean[][][] collisionsQuad3 = new boolean[1600][100][1600];
-	//public static boolean[][][] collisionsQuad4 = new boolean[1600][100][1600];
+	private boolean hasCollisions;
+	
+	private Collision collisions;
 	
 	private int textureIndex = 0;
 	
-	//private List<CollisionBox> collisions= new ArrayList<CollisionBox>();
+	
+	
 	
 	public Entity(TexturedModel model, Vector3f position, float rotX,
-			float rotY, float rotZ, float scale) {
+			float rotY, float rotZ, float scale, boolean hasCollisions, Collision collisions) {
 		super();
 		this.model = model;
 		this.position = position;
@@ -35,9 +36,14 @@ public class Entity {
 		this.rotZ = rotZ;
 		this.scale = scale;
 		
+		if(hasCollisions){
+			this.collisions = collisions;
+			updateCollisions();
+		}
+		
 	}
 	public Entity(TexturedModel model,int index, Vector3f position, float rotX,
-			float rotY, float rotZ, float scale) {
+			float rotY, float rotZ, float scale, boolean hasCollisions, Collision Collisions) {
 		super();
 		this.textureIndex = index;
 		this.model = model;
@@ -46,6 +52,22 @@ public class Entity {
 		this.rotY = rotY;
 		this.rotZ = rotZ;
 		this.scale = scale;
+		this.hasCollisions = hasCollisions;
+		
+		if(hasCollisions){
+			this.collisions = collisions;
+			updateCollisions();
+		}
+		
+	}
+	public boolean checkCollisions(CollisionBox inputCollision){
+		if(hasCollisions == false) return false;
+		else{
+			if(collisions == null) return false;
+			else if(inputCollision.checkColliding(collisions.getxMin(), collisions.getyMin(), collisions.getzMin()))return true;
+			else if(inputCollision.checkColliding(collisions.getxMax(), collisions.getyMax(), collisions.getzMax()))return true;
+			else return false;
+		}
 	}
 	
 	public float getTextureXOffset(){
@@ -56,7 +78,7 @@ public class Entity {
 		int row= textureIndex / model.getTexture().getNumberOfRows();
 		return (float)row/(float)model.getTexture().getNumberOfRows();
 	}
-	public void increasePosition(float dx, float dy, float dz){
+	public void increasePosition(double dx, double dy, double dz){
 		this.position.x += dx;
 		this.position.y += dy;
 		this.position.z += dz;
@@ -104,23 +126,14 @@ public class Entity {
 	public void setScale(float scale) {
 		this.scale = scale;
 	}
-	
-	
-	public void setCollisions(int length, int height, int width){
-		
-		for(int i = (int) (position.x-(length)); i <= (int)(position.x+(length)); i++){
-			for(int j = (int) (position.y)+20; j <= (int)(position.y+(height)+20);j++){
-				for (int k = (int) (position.z-(width)); k <=(int)(position.z+(width)); k++){
-					collisionsQuad[i][j][k] = true;
-					//collisionsQuad2[i][j][k] = true;
-					//collisionsQuad3[i][j][k] = true;
-					//collisionsQuad4[i][j][k] = true;
-				}
-			}
-			
-		}
-		
+	public Collision getCollisions() {
+		return collisions;
 	}
+	public void updateCollisions(){
+		collisions.updatePosition(position);
+	}
+	
+	
 	
 	
 
