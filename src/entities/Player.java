@@ -149,7 +149,7 @@ public class Player extends Entity{
 		//z
 		distanceFromObject[2] = (float) (distanceFromObject[2] / magnitude);
 		//moving player along the unit vector
-		double repelStrength = 1.8f;
+		double repelStrength = 0.9999f;
 		if(collision.getyMax()-1 < super.getCollisions().getyMin()){
 			Vector3f tempPosition = super.getPosition();
 			tempPosition.y = super.getCollisions().getyMinMagnitude() + collision.getyMax()-0.01f;
